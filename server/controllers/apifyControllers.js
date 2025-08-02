@@ -10,7 +10,7 @@ export const getUserActors = async (req, res) => {
       params: { token: apikey }
     });
 
-    res.json(response.data);
+    res.status(200).json(response.data);
 
   } catch (err) {
     console.error('Run error:', err?.response?.data || err.message);
