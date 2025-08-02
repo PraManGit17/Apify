@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json()); // ✅ Required
 
-app.use('/api/apify', apifyRoutes); // ✅ Route registration
+app.use('/apify', apifyRoutes); // ✅ Route registration
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

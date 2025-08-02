@@ -6,41 +6,49 @@ const BASE_URL = "https://api.apify.com/v2";
 export const getUserActors = async (req, res) => {
   const { apikey } = req.body;
   try {
-    const response = await axios.get(`${BASE_URL}/acts`, {
+    const response = await axios.get(`https://api.apify.com/v2/acts`, {
       params: { token: apikey }
     });
 
     res.json(response.data);
 
-  } catch (error) {
-
-    console.log(`Fetching error ${error}`);
+  } catch (err) {
+    console.error('Run error:', err?.response?.data || err.message);
     res.status(400).json({
-      error: 'Invalid API key or fetch failed'
+      error: 'Invalid API key or fetch failed',
+      details: err?.response?.data || err.message,
     });
   }
-}
+};
+
 
 export const getActorSchema = async (req, res) => {
-  const { apikey, actorId } = req.body;
-
-  console.log('Running actor with:', { actorId, apikey, input });
-
+  const { apiKey, actorId } = req.body;
   try {
+    const response = await axios.get(`${BASE_URL}/acts/${actorId}`, {
+      params: { token: apiKey }
+    });
 
-    const response = await axios.get(`${BASE_URL}/acts/${actorId}/input-schema`, {
-      params: { token: apikey }
-    })
+    const versions = response.data?.data?.versions || [];
+    let inputSchema = null;
+    for (const version of versions) {
+      inputSchema = version.sourceFiles?.find(file => file.name === 'INPUT_SCHEMA.json');
+      if (inputSchema) break;
+    }
+    if (!inputSchema) {
+      return res.status(404).json({ message: "No Input Schema Available" });
+    }
+    const parsedInputSchema = JSON.parse(inputSchema.content);
+    res.json(parsedInputSchema);
 
-    res.status(200).json(response.data);
-
-  } catch (error) {
-
+  } catch (err) {
+    console.error('Run error:', err?.response?.data || err.message);
     res.status(400).json({
-      error: 'Failed To fetch Input Schema'
-    })
+      error: 'Failed to fetch input schema',
+      details: err?.response?.data || err.message,
+    });
   }
-}
+};
 
 export const runActor = async (req, res) => {
   const { apikey, actorId, input } = req.body;
@@ -57,8 +65,7 @@ export const runActor = async (req, res) => {
 
     res.status(200).json(response.data);
   } catch (err) {
-
-    // console.error('Run error:', err?.response?.data || err.message);
+    console.error('Run error:', err?.response?.data || err.message);
     res.status(400).json({
       error: 'Actor run failed',
       details: err?.response?.data || err.message,
@@ -68,34 +75,50 @@ export const runActor = async (req, res) => {
 
 
 export const getRunStatus = async (req, res) => {
-  const { apikey, actorId } = req.body;
+  const { apikey, runId } = req.body;
 
   try {
     const response = await axios.get(
-      `https://api.apify.com/v2/acts/${actorId}/runs/last`,
+      `https://api.apify.com/v2/actor-runs/${runId}`,
       {
         params: { token: apikey },
         headers: { 'Content-Type': 'application/json' },
       }
     );
+
     const fullData = response.data.data;
     const filtered = {
       status: fullData.status,
     };
 
-    //     const filtered = {
-    //   id: fullData.id,
-    //   actId: fullData.actId,
-    //   userId: fullData.userId,
-    //   startedAt: fullData.startedAt,
-    //   finishedAt: fullData.finishedAt,
-    //   status: fullData.status,
-    //   meta: fullData.meta,
-    // };
-
     res.status(200).json(filtered);
   } catch (err) {
-    res.status(400).json({ error: 'Failed to check run status' });
+    console.error('Run error:', err?.response?.data || err.message);
+    res.status(400).json({
+      error: 'Failed to check run status',
+      details: err?.response?.data || err.message,
+    });
   }
 };
+
+export const getRunResults = async (req, res) => {
+  const { apikey, runId } = req.body;
+
+  try {
+
+    const response = await axios.get(`${BASE_URL}/actor-runs/${runId}/dataset/items`, {
+      params: { token: apikey },
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    res.status(200).json(response.data);
+  } catch (err) {
+    console.error('Run error:', err?.response?.data || err.message);
+
+    res.status(400).json({
+      error: 'Failed to fetch actor results',
+      details: err?.response?.data || err.message,
+    });
+  }
+}
 

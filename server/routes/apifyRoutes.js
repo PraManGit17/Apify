@@ -1,9 +1,10 @@
 import express from 'express';
 import {
   getUserActors,
-  getActorSchema,  
+  getActorSchema,
   runActor,
-  getRunStatus
+  getRunStatus,
+  getRunResults
 } from '../controllers/apifyControllers.js';
 
 const router = express.Router();
@@ -12,5 +13,7 @@ router.post('/actors', getUserActors);
 router.post('/schema', getActorSchema);
 router.post('/run', runActor);
 router.post('/run-status', getRunStatus);
+router.post('/run-results', getRunResults);
+
 
 export default router;
