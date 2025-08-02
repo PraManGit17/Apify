@@ -1,5 +1,6 @@
 import React from 'react';
 import Actors from './components/Actors';
+import Input_Schema from './components/Input_Schema';
 import axios from 'axios';
 import { useState } from 'react';
 
@@ -30,6 +31,7 @@ const App = () => {
 
       <div className='px-10 py-15 w-full'>
         <Actors apikey={apikey} setApikey={setApikey} actors={actors} fetchactors={fetchactors} />
+        <Input_Schema apikey={apikey} actors={actors} />
       </div>
     </div>
   )
