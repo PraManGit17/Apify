@@ -11,6 +11,9 @@ const App = () => {
 
   const [apikey, setApikey] = useState('');
   const [actors, setActors] = useState([]);
+  const [runId, setRunId] = useState('');
+  const [selectedActor, setSelectedActor] = useState('');
+  const [schema, setSchema] = useState(null);
 
 
   const fetchactors = async () => {
@@ -22,6 +25,25 @@ const App = () => {
     }
   }
 
+  const fetchinputschema = async () => {
+    console.log(apikey)
+    console.log(actors);
+    console.log(selectedActor);
+    console.log(schema);
+    const id = `apify~${selectedActor.name}`;
+    try {
+      const res = await axios.post(`${API_BASE}/schema`, {
+        apiKey: apikey,
+        actorId: id,
+      });
+      setSchema(res.data);
+    } catch (err) {
+      setSchema(null);
+      console.error(err.response?.data?.error || 'Failed to fetch schema');
+    }
+  };
+
+
   return (
     <div className='flex flex-col'>
       <div className='w-full h-full py-4 px-30 flex items-center gap-2 shadow-sm shadow-gray-900'>
@@ -29,9 +51,9 @@ const App = () => {
         <div className='text-4xl font-semibold'>Apify</div>
       </div>
 
-      <div className='px-10 py-15 w-full'>
-        <Actors apikey={apikey} setApikey={setApikey} actors={actors} fetchactors={fetchactors} />
-        <Input_Schema apikey={apikey} actors={actors} />
+      <div className='flex items-center justify-center gap-5 px-10 py-15 w-full'>
+        <Actors apikey={apikey} setApikey={setApikey} actors={actors} fetchactors={fetchactors} selectedActor={selectedActor} setSelectedActor={setSelectedActor} />
+        <Input_Schema selectedActor={selectedActor} fetchinputschema={fetchinputschema} schema={schema} />
       </div>
     </div>
   )
