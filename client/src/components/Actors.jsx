@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 
 const Actors = ({ apikey, setApikey, actors, fetchactors, selectedActor, setSelectedActor }) => {
   const [showActors, setShowActors] = useState(false);
+  const [loading, setLoading] = useState(false); 
+  
 
-  const handleValidate = (e) => {
+  const handleValidate = async (e) => {
     e.preventDefault();
-    fetchactors();
+    setLoading(true);
+    await fetchactors();
     setShowActors(true);
+    setLoading(false); 
   };
 
   const handleActorChange = (e) => {
@@ -15,7 +19,6 @@ const Actors = ({ apikey, setApikey, actors, fetchactors, selectedActor, setSele
     setSelectedActor(fullActor);
   };
 
-  
   return (
     <div className='h-[70vh] flex flex-col gap-4 w-[25%] bg-gray-100 py-4 px-5 rounded-xl'>
       <div className='text-lg font-medium'>Actors list</div>
@@ -32,10 +35,21 @@ const Actors = ({ apikey, setApikey, actors, fetchactors, selectedActor, setSele
           className='w-full px-1 py-1 bg-white rounded-lg outline-none placeholder:text-gray-400 placeholder:px-2 '
         />
         <button
-          className='px-3 py-1 bg-blue-500 rounded-sm text-white font-medium text-sm hover:bg-blue-600 hover:cursor-pointer'
+          className='flex items-center justify-center gap-2 px-3 py-1 bg-blue-500 rounded-sm text-white font-medium text-sm hover:bg-blue-600 hover:cursor-pointer disabled:opacity-60'
           onClick={handleValidate}
+          disabled={loading}
         >
-          Validate
+          {loading ? (
+            <>
+              <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l4-4-4-4v4a10 10 0 100 20v-4l-4 4 4 4v-4a8 8 0 01-8-8z" />
+              </svg>
+              Validating...
+            </>
+          ) : (
+            'Validate'
+          )}
         </button>
       </form>
 

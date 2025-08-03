@@ -9,7 +9,7 @@ const RunActor = ({ runactor, status, output }) => {
     try {
       const parsed = JSON.parse(input);
       setIsLoading(true);
-      await runactor(parsed); // Wait for actor to finish
+      await runactor(parsed); 
     } catch (err) {
       console.error('JSON parsing error:', err);
       alert('Invalid JSON input!');
