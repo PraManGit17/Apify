@@ -9,7 +9,7 @@ const app = express();
 
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://apify-eosin.vercel.app/'
+  'https://apify-eosin.vercel.app' 
 ];
 
 app.use(cors({
@@ -23,9 +23,8 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(express.json()); // ✅ Required
-
-app.use('/apify', apifyRoutes); // ✅ Route registration
+app.use(express.json());
+app.use('/apify', apifyRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
