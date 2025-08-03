@@ -4,7 +4,8 @@ import Actors from './components/Actors';
 import Input_Schema from './components/Input_Schema';
 import RunActor from './components/RunActor';
 
-const API_BASE = 'http://localhost:5000/apify';
+
+const API_BASE = 'https://apify-jbsr.onrender.com/apify';
 
 const App = () => {
   const [apikey, setApikey] = useState('');
